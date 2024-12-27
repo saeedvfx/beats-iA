@@ -6,10 +6,16 @@ def split_master_fountain(file_path):
     Splits a master.fountain file into folders and files based on markers:
     - Double-hash markers (##) define sections, converted to folders.
     - Single-line markers starting with a period (.) define beats, converted to files.
+    - Lines starting with a single # (e.g., #Act2) are ignored.
+    - Removes the last line if it starts with '/*'.
     Cleans up unused folders and files.
     """
     with open(file_path, 'r') as file:
         lines = file.readlines()
+
+    # Remove the last line if it starts with '/*'
+    if lines and lines[-1].startswith("/*"):
+        lines = lines[:-1]
 
     section_number = 100  # Starting number for sections (incremented by 100)
     section_name = None
@@ -26,6 +32,10 @@ def split_master_fountain(file_path):
     found_first_section = False
 
     for line in lines:
+        # Ignore single hash lines (e.g., #Act2)
+        if line.startswith("#") and not line.startswith("##"):
+            continue
+
         # Check for section markers (##)
         if line.startswith("##"):
             found_first_section = True
